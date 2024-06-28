@@ -6,7 +6,12 @@
 This repository contains the following code files:
 
 #### <ins>GMR folder</ins>
-*CR_model_run_results.r*: R code to arrange the data, run the GMR model and process results
+*CR_model_run_results.r*: R code to arrange the data, run the GMR model and process results  
+
+<ins>optimize_cost folder</ins>: analyses to optimize costs of GMR approach. This folder includes:
+- *1.optimize_subsample_dataSum*: Run CMR model by randomly selecting between 50% and 95% of the samples with successful genetic identification.  
+- *2.optimize_remove_oc*: Run CMR model by removing between 1 and 3 sampling occasions in all possible combinations  
+- *3. process_results*: Assess bias and CV from cost optimization analyses (scripts 1 and 2)  
 
 #### <ins>GeneralHDS</ins>
 *GeneralHDS_model_run_results.r*: R code to arrange the data, run the GeneralHDS model and process results
