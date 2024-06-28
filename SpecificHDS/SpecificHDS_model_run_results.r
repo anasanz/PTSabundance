@@ -13,7 +13,7 @@ library(rjags)
 library(jagsUI)
 
 
-setwd("D:/MargSalas/Ganga/Data/SpecificPTS")
+setwd("D:/MargSalas/Ganga/Data_code/Data_zenodo")
 dat <- read.csv(file = "Data_HDS_Specific.csv")
 
 dat_det <- dat[which(dat$Count >0), ] # Only presences
@@ -183,7 +183,7 @@ nc <- 3 ; ni <- 150000 ; nb <- 28000 ; nt <- 2
 
 ## ---- 6. Run model ----
 
-setwd("D:/MargSalas/Scripts_MS/Ganga/HDS/SpecificPTS/Model")
+setwd("D:/MargSalas/Ganga/Data_code/PTSabundance/SpecificHDS")
 source("1.2.HDS_sig[HR_inf_fullModel]_lam[hq[inf]].r")
 
 # With jagsUI 
@@ -208,7 +208,7 @@ MCMCtrace(out,
 
 # Load hq areas
 
-setwd("D:/MargSalas/Ganga/Data/FarmdindisDS")
+setwd("D:/MargSalas/Ganga/Data_code/Data_zenodo")
 hq_area <- read.csv(file = "HQ_area.csv", sep = ";")
 
 area_transect <- 500*800 # m2

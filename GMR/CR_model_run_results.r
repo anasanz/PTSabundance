@@ -10,7 +10,7 @@ library(rjags)
 
 ## ---- Data ----
 
-setwd("D:/MargSalas/Ganga/Data/CMR")
+setwd("D:/MargSalas/Ganga/Data_code/Data_zenodo")
 
 load("cr_sandgrouse_2022_new.RData")
 capt.hist <- as.data.frame(capt.hist$ch)
@@ -26,7 +26,7 @@ yaug <- rbind(data_ganga, array(0, dim = c(nz, T)))
 
 # Load sex
 
-setwd("D:/MargSalas/Ganga/Data/CMR")
+setwd("D:/MargSalas/Ganga/Data_code/Data_zenodo")
 load("id_sex_sandgrouse_2022.RData") # It is in the same order than capt.hist
 id_sex$sex[which(id_sex$sex == "F")] <- 0
 id_sex$sex[which(id_sex$sex == "M")] <- 1
@@ -36,7 +36,6 @@ sex <- as.numeric(id_sex$sex)
 sexAug <- c(sex, rep(NA, nz))
 
 # Specify model in BUGS language
-setwd("D:/MargSalas/Ganga/Data/CMR")
 sink("model_m0_pSex.txt")
 cat("
 model {

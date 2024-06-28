@@ -12,7 +12,7 @@ library(rjags)
 
 # Import data from original model (to add point of mean abundance and CV)
 
-setwd("D:/MargSalas/Scripts_MS/Ganga/CR/model_results")
+setwd("D:/MargSalas/Ganga/Data_code/Data_zenodo")
 load("out_sim_M0_psex.RData")
 
 mean_ab_original <- out_sim_M0_psex$mean$N
@@ -23,7 +23,7 @@ cv_original <- (out_sim_M0_psex$sd$N/out_sim_M0_psex$mean$N)*100
 
 ## ---- 1.1. Subsampling a % ----
 
-setwd("D:/MargSalas/Scripts_MS/Ganga/CR/optimize_sampling/results")
+setwd("D:/MargSalas/Ganga/Data_code/Data_zenodo")
 load("results_per2.RData")
 
 ab_sub <- as.data.frame(matrix(NA, nrow = 100, ncol = 6))
@@ -55,7 +55,7 @@ plot_cv_sub <- data.frame(group = as.numeric(1:6), subsample = as.factor(colname
 
 ## ---- 1.2. Removing occasions ----
 
-setwd("D:/MargSalas/Scripts_MS/Ganga/CR/optimize_sampling/results")
+setwd("D:/MargSalas/Ganga/Data_code/Data_zenodo")
 load("results_oc_remove.RData")
 
 ab_oc <- as.data.frame(matrix(NA, nrow = 10, ncol = 3))

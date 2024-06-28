@@ -17,7 +17,7 @@ library(rjags)
 
 ## ---- Load data ----
 
-setwd("D:/MargSalas/Ganga/Docs/Submit 1/Data_code/GMR/optimize_costs")
+setwd("D:/MargSalas/Ganga/Data_code/Data_zenodo")
 
 ganga <- readxl::read_excel("raw_data_sandgrouse.xlsx") %>%
   rename("id" = "INDIVIDUAL ID") %>%
@@ -28,14 +28,14 @@ ganga <- ganga[which(ganga$Year == 2022), -1] # Select year 2022
 ganga$detect <- 1 # 122 detections
 
 # Load sex
-setwd("D:/MargSalas/Ganga/Data/CMR")
+setwd("D:/MargSalas/Ganga/Data_code/Data_zenodo")
 load("id_sex_sandgrouse_2022.RData") # It is in the same order than capt.hist
 id_sex$sex[which(id_sex$sex == "F")] <- 0
 id_sex$sex[which(id_sex$sex == "M")] <- 1
 id_sex$sex[which(id_sex$sex == "X")] <- NA
 
-# Load model because it doesn't work
-setwd("D:/MargSalas/Ganga/Data/CMR")
+# Model 
+
 sink("model_m0_pSex.txt")
 cat("
 model {
@@ -225,7 +225,7 @@ for (i in 1:iter){
 # Store as 6th element of the list
 results_per[[6]] <- results_iter
 
-# setwd("D:/MargSalas/Scripts_MS/Ganga/CR/optimize_sampling/results")
+# setwd("D:/MargSalas/Ganga/Data_code/Data_zenodo")
 # save(results_per, file = "results_per2.RData")
 # save(explore, file = "data_sum_subsample.RData")
 

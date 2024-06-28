@@ -16,7 +16,7 @@ library(rjags)
 
 ## ---- Load data ----
 
-setwd("D:/MargSalas/Ganga/Docs/Submit 1/Data_code/GMR/optimize_costs")
+setwd("D:/MargSalas/Ganga/Data_code/Data_zenodo")
 
 ganga <- readxl::read_excel("raw_data_sandgrouse.xlsx") %>%
   rename("id" = "INDIVIDUAL ID") %>%
@@ -27,7 +27,7 @@ ganga <- ganga[which(ganga$Year == 2022), -1] # Select year 2022
 ganga$detect <- 1 # 122 detections
 
 # Load sex
-setwd("D:/MargSalas/Ganga/Data/CMR")
+setwd("D:/MargSalas/Ganga/Data_code/Data_zenodo")
 load("id_sex_sandgrouse_2022.RData") # It is in the same order than capt.hist
 id_sex$sex[which(id_sex$sex == "F")] <- 0
 id_sex$sex[which(id_sex$sex == "M")] <- 1
@@ -103,7 +103,7 @@ for (r in 1:length(oc_remove)){ # This is equivalent to the percentage when I re
   results_oc_remove[[r]] <- results_combi
 }
 
-#setwd("D:/MargSalas/Scripts_MS/Ganga/CR/optimize_sampling/results")
+#setwd("D:/MargSalas/Ganga/Data_code/Data_zenodo")
 #save(results_oc_remove, file = "results_oc_remove.RData")
 
 
