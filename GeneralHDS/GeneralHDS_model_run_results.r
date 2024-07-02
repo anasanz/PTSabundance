@@ -11,7 +11,7 @@ library(jagsUI)
 library(dplyr)
 
 
-setwd("D:/MargSalas/Ganga/Data/FarmdindisDS")
+setwd("D:/MargSalas/Ganga/Data_code/Data_zenodo")
 dat <- read.csv(file = "Data_HDS_Farmdindis.csv")
 
 # Delete AF39, only 1 observation and doesn't appear in transect list
@@ -103,7 +103,7 @@ for (i in 1:nrow(dat)){
 
 
 # Habitat quality
-setwd("D:/MargSalas/Ganga/Data/FarmdindisDS")
+setwd("D:/MargSalas/Ganga/Data_code/Data_zenodo")
 
 hq_dat2011 <- read.csv(file = "HQvariable2011_Farmdindis.csv") 
 hq_dat2021 <- read.csv(file = "HQvariable2021_Farmdindis.csv") 
@@ -206,7 +206,7 @@ nc <- 3 ; ni <- 700000 ; nb <- 100000 ; nt <- 5
 
 ## ---- Run model ----
 
-setwd("D:/MargSalas/Scripts_MS/Ganga/HDS/Farmdindis/Model")
+setwd("D:/MargSalas/Ganga/Data_code/PTSabundance/GeneralHDS") # Load from from github folder
 source("2.2.HDS_trendmodel_lam[hq]_sigHR.r")
 
 # With jagsUI 
@@ -223,12 +223,12 @@ print(out)
 ##                  Results
 ## ------------------------------------------------- 
 
-setwd("D:/MargSalas/Ganga/Results/HDS/Farmdindis/Model_results")
+setwd("D:/MargSalas/Ganga/Data_code/Data_zenodo")
 load("2.2.Dat_HDS_trendmodel_lam[hq]_sigHR.RData")
 
 # Load hq areas
 
-setwd("D:/MargSalas/Ganga/Data/FarmdindisDS")
+setwd("D:/MargSalas/Ganga/Data_code/Data_zenodo")
 hq_area <- read.csv(file = "HQ_area.csv", sep = ";")
 
 area_transect <- 500*1000 # m2

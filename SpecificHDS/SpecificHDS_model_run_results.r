@@ -184,7 +184,7 @@ nc <- 3 ; ni <- 150000 ; nb <- 28000 ; nt <- 2
 ## ---- 6. Run model ----
 
 setwd("D:/MargSalas/Ganga/Data_code/PTSabundance/SpecificHDS")
-source("1.2.HDS_sig[HR_inf_fullModel]_lam[hq[inf]].r")
+source("1.2.HDS_sig[HR_inf_fullModel]_lam[hq[inf]].r") # Load from github folder
 
 # With jagsUI 
 out <- jags(data1, inits, params, "1.2.HDS_sig[HR_inf_fullModel]_lam[hq[inf]].txt", n.chain = nc,
@@ -307,3 +307,4 @@ abline(v = mode_ab, col = "darkslategrey", lwd = 2)
 
 segments(x0=lci3,y0=0,x1=lci3,y1=dens_obs2$y[41],col="yellow", lwd = 1.5)
 segments(x0=uci3,y0=0,x1=uci3,y1=dens_obs2$y[270],col="yellow", lwd = 1.5)
+
