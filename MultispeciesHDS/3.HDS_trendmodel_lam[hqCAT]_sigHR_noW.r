@@ -6,13 +6,12 @@ cat("model{
     # PRIORS
     
     # PRIORS FOR LAMBDA
-    rho ~ dunif(-1,1) # Autorregresive parameter (serial AC)
-    tau <- pow(sd, -2) # Prior for overdispersion in eps
-    sd ~ dunif(0, 3)
-    
     bYear.lam ~ dnorm(0, 0.001) # Prior for the trend
     
-    bHQ ~ dnorm(0, 0.001)
+    bHQ1 ~ dnorm(0, 0.001)
+    bHQ2 ~ dnorm(0, 0.001)
+    bHQ3 ~ dnorm(0, 0.001)
+
 
     
     # Random effects for lambda per site
@@ -93,9 +92,8 @@ cat("model{
     y[j,1] ~ dbin(pcap[j,1], N[j,1]) 
     N[j,1] ~ dpois(lambda[j,1]) 
     
-    lambda[j,1] <- exp(log.lambda.site[site[j]] + log.lambda.year[year_index[1]] + bYear.lam*year1[1] + bHQ*hqCov[j,1] + w[j,1]) # year1 is t-1; year_index is t (to index properly the random effect)
-    w[j,1] <- eps[j,1] / sqrt(1 - rho * rho)
-    eps[j,1] ~ dnorm(0, tau)
+    lambda[j,1] <- exp(log.lambda.site[site[j]] + log.lambda.year[year_index[1]] + bYear.lam*year1[1] + bHQ1*hqCov1[j,1] + bHQ2*hqCov2[j,1] + bHQ3*hqCov3[j,1]) # year1 is t-1; year_index is t (to index properly the random effect)
+
     
     # Bayesian p-value on abundance component 
     
@@ -130,10 +128,8 @@ cat("model{
     y[j,t] ~ dbin(pcap[j,t], N[j,t]) 
     N[j,t] ~ dpois(lambda[j,t]) 
     
-    lambda[j,t] <- exp(log.lambda.site[site[j]] + log.lambda.year[year_index[t]] + bYear.lam*year1[t] + bHQ*hqCov[j,t] + w[j,t])
-    w[j,t] <- rho * w[j,t-1] + eps[j,t]
-    eps[j,t] ~ dnorm(0, tau)
-    
+    lambda[j,t] <- exp(log.lambda.site[site[j]] + log.lambda.year[year_index[t]] + bYear.lam*year1[t] + bHQ1*hqCov1[j,t] + bHQ2*hqCov2[j,t] + bHQ3*hqCov3[j,t])
+ 
     # Bayesian p-value on abundance component (rest of years)
     
     Nnew[j,t]~dpois(lambda[j,t]) # create replicate abundances for rest of the years
@@ -163,4 +159,4 @@ cat("model{
     exp(bYear.lam)}
     
     
-    }",fill=TRUE, file = "2.2.HDS_trendmodel_lam[hq]_sigHR.txt")
+    }",fill=TRUE, file = "3.HDS_trendmodel_lam[hqCAT]_sigHR_noW.txt")

@@ -109,18 +109,75 @@ hq_dat2011 <- read.csv(file = "HQvariable2011_Farmdindis.csv")
 hq_dat2021 <- read.csv(file = "HQvariable2021_Farmdindis.csv") 
 hq_dat <- left_join(hq_dat2011, hq_dat2021, "transectID")
 
+# Really few transexts in hq 3 when rounding(transect AF24 from 2010-1015)
+# So try new categories that take more transects into hq 3
+
+
+hq_dat$WeightedQuality2011_CAT2 <- 0
+for (i in 1:nrow(hq_dat)){
+  if(hq_dat$WeightedQuality2011[i] > 0 & hq_dat$WeightedQuality2011[i] <= 1){
+    hq_dat$WeightedQuality2011_CAT2[i] <- 1
+  } else if (hq_dat$WeightedQuality2011[i] > 1 & hq_dat$WeightedQuality2011[i] <= 2){
+    hq_dat$WeightedQuality2011_CAT2[i] <- 2
+  } else if (hq_dat$WeightedQuality2011[i] > 2){
+    hq_dat$WeightedQuality2011_CAT2[i] <- 3
+  }
+}
+
+hq_dat$WeightedQuality2021_CAT2 <- 0
+for (i in 1:nrow(hq_dat)){
+  if(hq_dat$WeightedQuality2021[i] > 0 & hq_dat$WeightedQuality2021[i] <= 1){
+    hq_dat$WeightedQuality2021_CAT2[i] <- 1
+  } else if (hq_dat$WeightedQuality2021[i] > 1 & hq_dat$WeightedQuality2021[i] <= 2){
+    hq_dat$WeightedQuality2021_CAT2[i] <- 2
+  } else if (hq_dat$WeightedQuality2021[i] > 2){
+    hq_dat$WeightedQuality2021_CAT2[i] <- 3
+  }
+}
+
+
 hq <- matrix(NA, nrow = length(all.sites), ncol = nyrs)
 rownames(hq) <- all.sites
 colnames(hq) <- yrs
 
 for (i in 1:nrow(hq_dat)) {
-  hq[which(rownames(hq) %in% hq_dat$transectID[i]), 1:6] <- hq_dat$WeightedQuality2011[i]
-  hq[which(rownames(hq) %in% hq_dat$transectID[i]), 7:13] <- hq_dat$WeightedQuality2021[i]
+  hq[which(rownames(hq) %in% hq_dat$transectID[i]), 1:6] <- hq_dat$WeightedQuality2011_CAT2[i]
+  hq[which(rownames(hq) %in% hq_dat$transectID[i]), 7:13] <- hq_dat$WeightedQuality2021_CAT2[i]
 }
 
-hq_mean <- mean(hq)
-hq_sd <- sd(hq)
-hq_sc <- (hq - hq_mean) / hq_sd
+# Create dummy variable
+
+hq.dummy <- array(1, c(length(all.sites), nyrs, 3)) # 3th dimension includes 3 arrays: one per level (intercept doesnt count)
+
+# hq.dummy[,,1] =0  hq.dummy[,,2] =0  hq.dummy[,,3] =0  ==> (hq 0, cat 1): Intercept, no need to add
+# hq.dummy[,,1] =1  hq.dummy[,,2] =0 hq.dummy[,,3] =0   ==> (hq 1, cat 2): Multiply b.hq1*array #1 
+# hq.dummy[,,1] =0  hq.dummy[,,2] =1 hq.dummy[,,3] =0   ==> (hq 2, cat 3): Multiply b.hq2*array #2
+# hq.dummy[,,1] =0  hq.dummy[,,2] =0 hq.dummy[,,3] =1   ==> (hq 3, cat 4): Multiply b.hq3*array #3
+
+for (t in 1:nyrs){
+  tmp <- tmp1 <- tmp2 <- tmp3 <- hq[,t]
+  
+  # Dummy variable hq 1 (only 1 appear as 1)
+  tmp1[tmp1[] %in% c(2,3)] <- 0
+  tmp1[tmp1[] %in% c(1)] <- 1
+  hq.dummy[,t,1] <- tmp1
+  
+  # Dummy variable hq2 (only de 2 appear as 1)
+  tmp2[tmp2[] %in% c(1,3)] <- 0
+  tmp2[tmp2[] %in% c(2)] <- 1
+  hq.dummy[,t,2] <- tmp2
+  
+  # Dummy variable hq3 (only de 3 appear as 1)
+  tmp3[tmp3[] %in% c(1,2)] <- 0
+  tmp3[tmp3[] %in% c(3)] <- 1
+  hq.dummy[,t,3] <- tmp3
+}
+
+# Name it as covariate
+hqCov1 <- hq.dummy[,,1]
+hqCov2 <- hq.dummy[,,2]
+hqCov3 <- hq.dummy[,,3]
+
 
 # ---- Specify data in JAGS format ----
 
@@ -184,47 +241,49 @@ for (t in 1:nyrs){ # sites has to be nested on years because dclass first indexe
 
 data1 <- list(nyears = nyrs, nsites = nSites, nG=nG, int.w=int.w, strip.width = strip.width, midpt = midpt, db = dist.breaks,
               year.dclass = year.dclass, site.dclass = site.dclass, y = m, nind=nind, dclass=dclass,
-              hqCov = hq_sc, tempCov = temp_sc, ob = ob, nobs = nobs, year1 = year_number, site = site, year_index = yrs)
+              hqCov1 = hqCov1, hqCov2 = hqCov2, hqCov3 = hqCov3,
+              tempCov = temp_sc, ob = ob, nobs = nobs, year1 = year_number, site = site, year_index = yrs)
 
 ## ---- Inits ----
 
 Nst <- m + 1
 inits <- function(){list(mu.sig = runif(1, log(30), log(50)), sig.sig = runif(1), sig.sig.year = runif(1), b = runif(1),
                          mu.lam.site = runif(1), sig.lam.site = 0.2, sig.lam.year = 0.3, 
-                         bYear.lam = runif(1), bHQ = runif(1), 
+                         bYear.lam = runif(1), bHQ1 = runif(1), bHQ2 = runif(1), bHQ3 = runif(1), 
                          N = Nst)} 
 ## ---- Params ----
 
 params <- c( "mu.sig", "sig.sig", "log.sigma.year", "bTemp.sig", "b",
-             "mu.lam.site", "sig.lam.site", "sig.lam.year", "bYear.lam", "log.lambda.year", "bHQ",  # Save year effect
-             "popindex", "sd", "rho", "w", "lam.tot",'Bp.Obs', 'Bp.N')
+             "mu.lam.site", "sig.lam.site", "sig.lam.year", "bYear.lam", "log.lambda.year", # Save year effect
+             "bHQ1", "bHQ2", "bHQ3",  
+             "popindex","lam.tot",'Bp.Obs', 'Bp.N')
 
 
 ## ---- MCMC settings ----
 
-nc <- 3 ; ni <- 700000 ; nb <- 100000 ; nt <- 5
+nc <- 3 ; ni <- 800000 ; nb <- 100000 ; nt <- 5
 
 ## ---- Run model ----
 
 setwd("D:/MargSalas/Ganga/Data_code/PTSabundance/GeneralHDS") # Load from from github folder
-source("2.2.HDS_trendmodel_lam[hq]_sigHR.r")
+source("3.HDS_trendmodel_lam[hqCAT]_sigHR_noW.r")
 
 # With jagsUI 
-out <- jags(data1, inits, params, "2.2.HDS_trendmodel_lam[hq]_sigHR.txt", n.chain = nc,
+out <- jags(data1, inits, params, "3.HDS_trendmodel_lam[hqCAT]_sigHR_noW.txt", n.chain = nc,
             n.thin = nt, n.iter = ni, n.burnin = nb, parallel = TRUE)
 
 summary <- out$summary
 print(out)
 
 #setwd(" ")
-#save(out, file = "2.2.Dat_HDS_trendmodel_lam[hq]_sigHR.RData") 
+#save(out, file = "3.Dat_HDS_trendmodel_lam[hq_weight_CAT2]_sigHR.RData") 
 
 ## -------------------------------------------------
 ##                  Results
 ## ------------------------------------------------- 
 
 setwd("D:/MargSalas/Ganga/Data_code/Data_zenodo")
-load("2.2.Dat_HDS_trendmodel_lam[hq]_sigHR.RData")
+load("3.Dat_HDS_trendmodel_lam[hq_weight_CAT2]_sigHR.RData.RData")
 
 # Load hq areas
 
@@ -241,9 +300,14 @@ mu.site <- out$sims.list$mu.lam.site # Mean = summary -1.532456
 random.year.2022 <- out$sims.list$log.lambda.year[,13] # Mean = summary -0.2761982
 bYear.lam <- out$sims.list$bYear.lam # Mean = summary -0.02565323
 year1 <- 12
-bHQ <- out$sims.list$bHQ # Mean = summary
+bHQ1 <- out$sims.list$bHQ1 # Mean = summary
+bHQ2 <- out$sims.list$bHQ2 # Mean = summary
+bHQ3 <- out$sims.list$bHQ3 # Mean = summary
 
 hqzones <- c("hq1", "hq2", "hq3")
+
+# Dummy covariate habitat quality to predict
+hq_predict <- data.frame(hq1 = c(1,0,0), hq2 = c(0,1,0), hq3 = c(0,0,1))
 
 ab <- data.frame(matrix(NA, nrow = length(mu.site), ncol = 4))
 colnames(ab) <- c(hqzones, "total")
@@ -253,7 +317,8 @@ colnames(de) <- c(hqzones, "total")
 
 for (i in 1:length(hqzones)) {
   
-  lambda <- exp(mu.site + random.year.2022 + bYear.lam*year1 + bHQ * i) # Expected abundance
+  lambda <- exp(mu.site + random.year.2022 + bYear.lam*year1 + 
+                  bHQ1 * hq_predict[1,i] + bHQ2 * hq_predict[2,i] + bHQ3 * hq_predict[3,i]) # Expected abundance
   
   dens <- lambda/area_transect
   abundance <- dens*hq_area$x[i]
@@ -303,8 +368,8 @@ par(mfrow = c(2,1),
     mar = c(3.2,3,2,1))
 plot(dens_obs1, main = "Full posterior distribution", col = "darkcyan", lwd = 1.2, xlab = " ", ylab = " ", bty = "n", axes = FALSE)
 polygon(c(dens_obs1$x, 0), c(dens_obs1$y, 0), col="darkcyan", border = "darkcyan") # ?? I still don't know if its right
-polygon(c(dens_obs1$x[which(dens_obs1$x > lci3 & dens_obs1$x < uci3)], uci3, lci3), 
-        c(dens_obs1$y[which(dens_obs1$x > lci3 & dens_obs1$x < uci3)], 0, 0), 
+polygon(c(dens_obs1$x[which(dens_obs1$x > lci & dens_obs1$x < uci)], uci, lci), 
+        c(dens_obs1$y[which(dens_obs1$x > lci & dens_obs1$x < uci)], 0, 0), 
         col=adjustcolor("yellow", alpha = 0.5),
         border = adjustcolor("yellow", alpha = 0.5)) 
 
@@ -317,8 +382,8 @@ mtext("Probability", side = 2, line = 1.7)
 
 plot(dens_obs2, main = "Posterior distribution (0 - 97.5% CI)", col = "darkcyan",lwd = 1.5, xlab = "", ylab = "", bty = "n", axes = FALSE)
 polygon(c(dens_obs2$x, 0), c(dens_obs2$y, 0), col="darkcyan", border = "darkcyan",lwd = 1.5) # ?? I still don't know if its right
-polygon(c(dens_obs2$x[which(dens_obs2$x > lci3 & dens_obs2$x < uci3)], uci3, lci3), 
-        c(dens_obs2$y[which(dens_obs2$x > lci3 & dens_obs2$x < uci3)], 0, 0), 
+polygon(c(dens_obs2$x[which(dens_obs2$x > lci & dens_obs2$x < uci)], uci, lci), 
+        c(dens_obs2$y[which(dens_obs2$x > lci & dens_obs2$x < uci)], 0, 0), 
         col=adjustcolor("yellow", alpha = 0.5),
         border = "yellow", lwd = 1.5) 
 
@@ -331,11 +396,11 @@ mtext("Probability", side = 2, line = 1.7)
 abline(v = mean_ab, col = "darkslategrey", lwd = 2)
 abline(v = mode_ab, col = "darkslategrey", lwd = 2)
 
-segments(x0=lci3,y0=0,x1=lci3,y1=dens_obs2$y[41],col="yellow", lwd = 1.5)
-segments(x0=uci3,y0=0,x1=uci3,y1=dens_obs2$y[270],col="yellow", lwd = 1.5)
+segments(x0=lci,y0=0,x1=lci,y1=dens_obs2$y[41],col="yellow", lwd = 1.2)
+segments(x0=uci,y0=0,x1=uci,y1=dens_obs2$y[270],col="yellow", lwd = 1.2)
 
-text(x = 82, y = 0.0007, labels = "Mean:\n85 ind", adj = 0, pos = 4, col = "darkslategrey", cex = 1, font = 2)
-text(x = 34, y = 0.0007, labels = "Mode:\n37 ind", adj = 0, pos = 4, col = "darkslategrey", cex = 1, font = 2)
+text(x = mean_ab - 1.5, y = 0.0009, labels = "Mean:\n50 ind", adj = 0, pos = 4, col = "darkslategrey", cex = 1, font = 2)
+text(x = mode_ab - 1.5, y = 0.0009, labels = "Mode:\n38 ind", adj = 0, pos = 4, col = "darkslategrey", cex = 1, font = 2)
 
 
 
@@ -349,12 +414,11 @@ colnames(results) <- c("abundance_mean","abundance_lci", "abundance_uci", "densi
 
 for (i in 1:(length(hqzones)+1)) {
   results[i,1] <- round(mean(ab[,i]),2)
-  results[i,2] <- round(quantile(ab[,i],probs = 0.075),2)
-  results[i,3] <- round(quantile(ab[,i],probs = 0.925),2)
+  results[i,2] <- round(quantile(ab[,i],probs = 0.025),2)
+  results[i,3] <- round(quantile(ab[,i],probs = 0.975),2)
   results[i,4] <- mean(de[,i])
-  results[i,5] <- quantile(de[,i],probs = 0.075)
-  results[i,6] <- quantile(de[,i],probs = 0.925)
+  results[i,5] <- quantile(de[,i],probs = 0.025)
+  results[i,6] <- quantile(de[,i],probs = 0.975)
 }
 
 results[4,1] <- paste("Mean = ", round(mean_ab, 2), ", Mode = ", round(mode_ab, 2), sep = "")
-
