@@ -23,4 +23,4 @@ This repository contains the following code files:
 - *1.2.HDS_sig[HR_inf_fullModel]_lam[hq[inf]_CAT]_corrected*: SpecificHDS model
 
 ### Data
-The Zenodo repository [https://doi.org/10.5281/zenodo.12626697](https://doi.org/10.5281/zenodo.12626697) contains all data files needed to run the aboved described scripts. Please ask corresponding author to get access to the data files.
+The Zenodo repository [https://doi.org/10.5281/zenodo.14387266](https://doi.org/10.5281/zenodo.14387266) contains all data files needed to run the aboved described scripts. Please ask corresponding author to get access to the data files.
