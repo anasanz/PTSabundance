@@ -21,6 +21,8 @@ This repository contains the following code files:
 #### <ins>SpecificHDS</ins>
 - *SandgrouseHDS_model_run_results.r*: R code to arrange the data, run the SandgrouseHDS model and process results.
 - *1.2.HDS_sig[HR_inf_fullModel]_lam[hq[inf]_CAT]_corrected*: SpecificHDS model
+- *simulation_repeatedSurveys_sandgrouseHDS*: R code for simulation performed to test how many HDS surveys would be needed to reach the precision of GMR
+- *5.HDS_2Survey_sig[HR_inf_fullModel]_lam[hq[inf]_CAT]*: SpecificHDS model with additional survey dimension for the simulation performed in the script *simulation_repeatedSurveys_sandgrouseHDS*
 
 ### Data
 The Zenodo repository [https://zenodo.org/records/14387266?token=eyJhbGciOiJIUzUxMiJ9.eyJpZCI6Ijc5NjlkYTdiLTY0ZTItNDVjZi05OGU1LWFiYzFjZTc3ODQxYSIsImRhdGEiOnt9LCJyYW5kb20iOiI3MDRiMzllYWYyMjJlNjU1ZjBjMWUxMDk2YzhlYjlkMSJ9.-XL0ckizaV1vrU6spF7Pjh0iVvmluqFyM3Hz_mDNLu7LssAymPSepS-QKvdYYBGxFhFH5pzO7f8jxG1IIP9Vdw](https://zenodo.org/records/14387266?token=eyJhbGciOiJIUzUxMiJ9.eyJpZCI6Ijc5NjlkYTdiLTY0ZTItNDVjZi05OGU1LWFiYzFjZTc3ODQxYSIsImRhdGEiOnt9LCJyYW5kb20iOiI3MDRiMzllYWYyMjJlNjU1ZjBjMWUxMDk2YzhlYjlkMSJ9.-XL0ckizaV1vrU6spF7Pjh0iVvmluqFyM3Hz_mDNLu7LssAymPSepS-QKvdYYBGxFhFH5pzO7f8jxG1IIP9Vdw) contains all data files needed to run the aboved described scripts. Please ask corresponding author to get access to the data files.
