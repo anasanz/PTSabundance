@@ -13,7 +13,7 @@ library(rjags)
 
 ## ---- Load our model results to set population parameters ----
 
-setwd("D:/MargSalas/Scripts_MS/Ganga/CR/model_results")
+setwd("D:/MargSalas/Ganga/Data_code/Data_zenodo")
 load("out_sim_M0_psex.RData")
 sum <- out_sim_M0_psex$summary
 

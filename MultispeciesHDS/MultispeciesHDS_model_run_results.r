@@ -265,7 +265,7 @@ nc <- 3 ; ni <- 800000 ; nb <- 100000 ; nt <- 5
 
 ## ---- Run model ----
 
-setwd("D:/MargSalas/Ganga/Data_code/PTSabundance/GeneralHDS") # Load from from github folder
+#setwd(" ") # Load from from github folder
 source("3.HDS_trendmodel_lam[hqCAT]_sigHR_noW.r")
 
 # With jagsUI 
