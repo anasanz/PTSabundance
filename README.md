@@ -1,4 +1,4 @@
-# Data and code for manuscript “How to better count elusive birds? Comparing non-invasive monitoring methods to estimate population size of the endangered Pin-tailed sandgrouse (Pterocles alchata)” 
+# Data and code for manuscript “How to better count elusive birds? Comparing non-invasive monitoring methods to estimate population size of the threatened Pin-tailed sandgrouse (Pterocles alchata)” 
 
 ## Description of the data and file structure
 
@@ -14,11 +14,11 @@ This repository contains the following code files:
   - *2.optimize_remove_oc*: Run CMR model by removing between 1 and 3 sampling occasions in all possible combinations. Results are stored in *results_oc_remove.RData*, which are provided as data files and loaded in script 3  
   - *3. process_results*: Assess bias and CV from cost optimization analyses (scripts 1 and 2)  
 
-#### <ins>GeneralHDS</ins>
+#### <ins>MultispeciesHDS</ins>
 - *MultispeciesHDS_model_run_results.r*: R code to arrange the data, run the MultispeciesHDS model and process results. Model results are stored in *3.Dat_HDS_trendmodel_lam[hq_weight_CAT2]_sigHR.RData*, which are provided as data files  
 - *3.HDS_trendmodel_lam[hqCAT]_sigHR_noW*: MultispeciesHDS model  
   
-#### <ins>SpecificHDS</ins>
+#### <ins>SandgrouseHDS</ins>
 - *SandgrouseHDS_model_run_results.r*: R code to arrange the data, run the SandgrouseHDS model and process results.
 - *1.2.HDS_sig[HR_inf_fullModel]_lam[hq[inf]_CAT]_corrected*: SpecificHDS model
 - *simulation_repeatedSurveys_sandgrouseHDS*: R code for simulation performed to test how many HDS surveys would be needed to reach the precision of GMR
